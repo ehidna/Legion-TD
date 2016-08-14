@@ -29,7 +29,17 @@ public class Fighter : MonoBehaviour {
 		setRadius (stats.viewRadius);
 	}
 
+	void OnDisable(){
+		radiusCollider.enabled = false;
+		fight = false;
+	}
+
 	void Update () {
+		if (GameManager.instance.building) 
+			radiusCollider.enabled = false;
+		else 
+			radiusCollider.enabled = true;
+		
 		if (currentTarget == null)
 			return;
 		

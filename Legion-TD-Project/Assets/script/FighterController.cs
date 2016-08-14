@@ -26,6 +26,15 @@ public class FighterController : MonoBehaviour {
 	private Transform nextPathPoint;
 	private float nextWaypointDistance = 1;
 
+	void OnDisable(){
+		currentStatus = enemyStatus.Idle;
+		Reset (); //position, stat vb.
+	}
+
+	void Reset(){
+		transform.position = GetComponent<FighterStats> ().getPosition ();
+	}
+
 	void Start () {
 		ag = transform.GetComponent<NavMeshAgent> ();
 		_fighter = transform.GetComponent<Fighter> ();

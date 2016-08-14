@@ -32,6 +32,14 @@ public class FighterStats : MonoBehaviour {
 		return damage;
 	}
 
+	[SerializeField]
+	private Vector3 position;
+	public void setPosition(Vector3 _position){
+		position = _position;
+	}
+	public Vector3 getPosition(){
+		return position;
+	}
 
 	[SerializeField]
 	private float speed;

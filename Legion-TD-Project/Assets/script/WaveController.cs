@@ -48,8 +48,12 @@ public class WaveController : MonoBehaviour {
 		waveCountdown -= Time.deltaTime;
 
 		if (waveCountdown == 0 && enemiesAlive == false) {
+			GameManager.instance.building = false;
 			StartCoroutine ( SpawnWave ( Waves[waveIndex] ) );
 			return;
+		}
+		if (waveCountdown > 0) {
+			GameManager.instance.building = true;
 		}
 	}
 
