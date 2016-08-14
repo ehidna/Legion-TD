@@ -13,10 +13,11 @@ public class FighterController : MonoBehaviour {
 	public enum enemyStatus{Move, Fight, Idle};
 	public enemyStatus currentStatus;
 
-	private GameObject currentTarget;
-
 	[SerializeField]
 	private string targetTag;
+
+	Fighter _fighter;
+	EnemySeeker seek;
 
 	[Header("PATH")]
 	[SerializeField]
@@ -27,6 +28,8 @@ public class FighterController : MonoBehaviour {
 
 	void Start () {
 		ag = transform.GetComponent<NavMeshAgent> ();
+		_fighter = transform.GetComponent<Fighter> ();
+		seek = transform.GetComponent<EnemySeeker> ();
 		currentPathPoint = 0;
 		nextPathPoint = pathPoints [currentPathPoint];
 	}
@@ -34,9 +37,6 @@ public class FighterController : MonoBehaviour {
 	void Update () {
 		if (currentPathPoint < pathPoints.Length && currentStatus == enemyStatus.Move)
 			Move ();
-//		if (transform.CompareTag ("Tower"))
-//			if(_fighter.currentTarget != null)
-//				Debug.Log (visibleTargets.Count + " enemy: "+ _fighter.currentTarget.name);
 	}
 
 	private void Move (){
@@ -69,10 +69,10 @@ public class FighterController : MonoBehaviour {
 	public void OnChildTriggerEnter(Collider other){
 		if (other.CompareTag (targetTag)) {
 			if (visibleTargets.Count == 0) {
-				currentTarget = other.gameObject;
+				_fighter.currentTarget = other.gameObject;
 				currentStatus = enemyStatus.Fight;
 				ag.Stop ();
-				Debug.Log ("Fight begins");
+				seek.enabled = true;
 			}
 			visibleTargets.Add (other.gameObject.transform);
 		}
@@ -84,16 +84,16 @@ public class FighterController : MonoBehaviour {
 			visibleTargets.RemoveAt(i);
 
 			if (visibleTargets.Count > 0) {// FindNearestTarget
+				_fighter.currentTarget = visibleTargets [FindNearestTarget ()].gameObject;
 				currentStatus = enemyStatus.Fight;
 				ag.Stop ();
-				Debug.Log ("Fight begins");
 			}
 			else {
+				_fighter.currentTarget = null;
+				seek.enabled = false;
 				currentStatus = enemyStatus.Move;
 				ag.Resume ();
-				Debug.Log ("Move");
 			}
 		}
 	}
-
 }
