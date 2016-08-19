@@ -1,20 +1,20 @@
 ﻿using UnityEngine;
 using System.Collections;
-using UnityEngine.UI;
 
 public class Node : MonoBehaviour {
 
 	private GameObject fighter;
 	public Vector3 positionOffset;
 
-	[SerializeField]
-	private Text cantBuild;
-
 	[HideInInspector]
 	public Color color;
 
+	ResourceController resource;
+	UIController ui;
+
 	void Start(){
-		cantBuild = GameObject.FindGameObjectWithTag ("Build").GetComponent<Text>();
+		resource = GameObject.Find ("ResourceManager").GetComponent<ResourceController>();
+		ui = GameObject.Find ("UIManager").GetComponent<UIController>();			
 	}
 
 	void Update(){
@@ -24,20 +24,23 @@ public class Node : MonoBehaviour {
 			color = Color.green;
 	}
 
-	IEnumerator MyCoroutine(){
-		cantBuild.enabled = true;
-		yield return new WaitForSeconds(1);
-		cantBuild.enabled = false;
-	}
-
 	void OnMouseDown(){
 		if (fighter != null){
-			StartCoroutine(MyCoroutine());
-			Debug.Log("Can't build there! - TODO: Display on screen.");
+			ui.CantBuild ();
+			//			Debug.Log("Can't build there! - TODO: Display on screen.");
 			return;
 		}
+
 		GameObject fighterToBuild = BuildManager.instance.GetFighterToBuild();
-		fighter = (GameObject)Instantiate(fighterToBuild, transform.position + positionOffset, transform.rotation);
-		fighter.GetComponent<FighterStats> ().setPosition (fighter.transform.position);
+		if (resource.Money < fighterToBuild.GetComponent<FighterStats> ().getCost ()) {
+			ui.NoMoney ();
+			//			Debug.Log("No Money! - TODO: Display on screen.");
+			return;
+		} else {
+			fighter = (GameObject)Instantiate (fighterToBuild, transform.position + positionOffset, transform.rotation);
+			fighter.GetComponent<FighterStats> ().setPosition (fighter.transform.position);
+			resource.BuyTower (fighter);
+		}
+
 	}
 }

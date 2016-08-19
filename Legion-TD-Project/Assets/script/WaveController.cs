@@ -12,6 +12,8 @@ public class WaveController : MonoBehaviour {
 		public GameObject SpawnPoint;
 	}
 
+	ResourceController resource;
+
 	public float timeBetweenWaves;
 
 	public Wave[] Waves;
@@ -31,7 +33,7 @@ public class WaveController : MonoBehaviour {
 	void Start () {
 		waveNumber = 1;
 		waveCountdown = timeBetweenWaves;
-
+		resource = GameObject.Find ("ResourceManager").GetComponent<ResourceController> ();
 		InvokeRepeating ("WaveTracker", 0f, 1f);
 	}
 
@@ -40,6 +42,7 @@ public class WaveController : MonoBehaviour {
 			if (GameObject.FindGameObjectsWithTag ("Enemy").Length == 0) {
 				enemiesAlive = false;
 				waveCountdown = timeBetweenWaves;
+				resource.AddIncomeToMoney ();
 			}	
 		}
 	}
@@ -68,6 +71,15 @@ public class WaveController : MonoBehaviour {
 			Transform enemy = Instantiate (wave.enemy, wave.SpawnPoint.transform.position + Random.insideUnitSphere * 2, wave.SpawnPoint.transform.rotation)as Transform;
 			enemy.name = "Enemy" + i; 
 			yield return new WaitForSeconds (1f/wave.spawnRate);
+		}
+		yield return new WaitForSeconds (1.0f);
+
+		GameObject[] mercenaries = GameObject.FindGameObjectsWithTag ("Mercenary");
+		for (int i = 0; i < mercenaries.Length; i++) {
+			mercenaries[i].transform.position = wave.SpawnPoint.transform.position + Random.insideUnitSphere * 2;
+			mercenaries[i].tag = "Enemy"; 
+			mercenaries[i].GetComponent<NavMeshAgent> ().enabled = true;
+			mercenaries[i].GetComponent<FighterController> ().currentStatus = FighterController.enemyStatus.Move;
 		}
 
 		waveNumber += 1;

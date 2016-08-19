@@ -18,6 +18,7 @@ public class FighterController : MonoBehaviour {
 
 	Fighter _fighter;
 	EnemySeeker seek;
+	FighterStats stat;
 
 	[Header("PATH")]
 	[SerializeField]
@@ -32,15 +33,20 @@ public class FighterController : MonoBehaviour {
 	}
 
 	void Reset(){
-		transform.position = GetComponent<FighterStats> ().getPosition ();
+		if (stat == null)
+			return;
+		transform.position = stat.getPosition ();
+		stat.setHealth (stat.getMaxHealth ());
 	}
 
 	void Start () {
 		ag = transform.GetComponent<NavMeshAgent> ();
 		_fighter = transform.GetComponent<Fighter> ();
 		seek = transform.GetComponent<EnemySeeker> ();
+		stat = transform.GetComponent<FighterStats> ();
 		currentPathPoint = 0;
 		nextPathPoint = pathPoints [currentPathPoint];
+		stat.setHealth (stat.getMaxHealth ());
 	}
 
 	void Update () {
@@ -96,6 +102,7 @@ public class FighterController : MonoBehaviour {
 				_fighter.currentTarget = visibleTargets [FindNearestTarget ()].gameObject;
 				currentStatus = enemyStatus.Fight;
 				ag.Stop ();
+				seek.enabled = true;
 			}
 			else {
 				_fighter.currentTarget = null;

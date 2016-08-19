@@ -13,6 +13,7 @@ public class Projectile : MonoBehaviour {
 	private Transform target;
 
 	FighterStats stat;
+	ResourceController resource;
 
 	public void Seek(Transform _target){
 		target = _target;
@@ -20,8 +21,9 @@ public class Projectile : MonoBehaviour {
 
 	void Start(){
 		stat = target.GetComponent<FighterStats> ();
+		resource = GameObject.Find ("ResourceManager").GetComponent<ResourceController>();
 	}
-		
+
 	// Update is called once per frame
 	void Update () {
 		if (target == null){
@@ -46,6 +48,10 @@ public class Projectile : MonoBehaviour {
 		if (target.CompareTag ("Tower"))
 			Debug.Log (hp);
 		if (hp <= 0) {
+			target.GetComponent<Renderer>().enabled = false;
+			if (!target.CompareTag ("Tower")) {
+				resource.FighterReward (target.gameObject);
+			}
 			target.position = new Vector3 (destroyPlace.position.x, destroyPlace.position.y, destroyPlace.position.z);
 			Destroy (target.gameObject, 0.1f);
 		}

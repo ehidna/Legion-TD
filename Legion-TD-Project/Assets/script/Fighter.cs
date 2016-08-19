@@ -27,10 +27,12 @@ public class Fighter : MonoBehaviour {
 		radiusCollider = GetComponentInChildren<SphereCollider> ();
 		stats = GetComponent<FighterStats> ();
 		setRadius (stats.viewRadius);
+
 	}
 
 	void OnDisable(){
-		radiusCollider.enabled = false;
+		if(radiusCollider != null)
+			radiusCollider.enabled = false;
 		fight = false;
 	}
 
@@ -39,10 +41,10 @@ public class Fighter : MonoBehaviour {
 			radiusCollider.enabled = false;
 		else 
 			radiusCollider.enabled = true;
-		
+
 		if (currentTarget == null)
 			return;
-		
+
 		setRadius (stats.viewRadius);
 
 		Vector3 dir = currentTarget.transform.position - transform.position;
@@ -63,7 +65,8 @@ public class Fighter : MonoBehaviour {
 	public void Fight(){
 		GameObject bulletGO = (GameObject)Instantiate(bullet, firePoint.position, firePoint.rotation);
 		Projectile _bullet = bulletGO.GetComponent<Projectile>();
-			
+		bulletGO.transform.SetParent (transform);
+
 		if (_bullet != null ) { // && currentTarget != null
 			_bullet.speed = stats.getProjectileSpeed ();
 			_bullet.damage = stats.getDamage ();

@@ -15,12 +15,57 @@ public class FighterStats : MonoBehaviour {
 	}
 
 	[SerializeField]
+	private int cost;
+	public void setCost(int _cost){
+		cost = _cost;
+	}
+	public int getCost(){
+		return cost;
+	}
+
+	[SerializeField]
+	private int income;
+	public void setIncome(int _income){
+		income = _income;
+	}
+	public int getIncome(){
+		return income;
+	}
+
+	[SerializeField]
+	private int gold;
+	public void setGold(int _gold){
+		gold = _gold;
+	}
+	public int getGold(){
+		return gold;
+	}
+
+	[SerializeField]
+	private Vector3 position;
+	public void setPosition(Vector3 _position){
+		position = _position;
+	}
+	public Vector3 getPosition(){
+		return position;
+	}
+
+	[SerializeField]
 	private float health;
 	public void setHealth(float _health){
 		health = _health;
 	}
 	public float getHealth(){
 		return health;
+	}
+
+	[SerializeField]
+	private float maxHealth;
+	public void setMaxHealth(float _maxHealth){
+		maxHealth = _maxHealth;
+	}
+	public float getMaxHealth(){
+		return maxHealth;
 	}
 
 	[SerializeField]
@@ -32,14 +77,6 @@ public class FighterStats : MonoBehaviour {
 		return damage;
 	}
 
-	[SerializeField]
-	private Vector3 position;
-	public void setPosition(Vector3 _position){
-		position = _position;
-	}
-	public Vector3 getPosition(){
-		return position;
-	}
 
 	[SerializeField]
 	private float speed;

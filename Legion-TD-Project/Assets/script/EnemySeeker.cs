@@ -11,7 +11,7 @@ public class EnemySeeker : MonoBehaviour {
 		stat = GetComponent<FighterStats> (); 
 		_fighter = GetComponent<Fighter> ();
 	}
-	
+
 	// Update is called once per frame
 	void Update () {	
 		if (_fighter == null || _fighter.currentTarget == null) {
