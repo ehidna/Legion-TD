@@ -5,7 +5,7 @@ public class ResourceController : MonoBehaviour {
 
 	FighterStats stat;
 	UIController ui;
-	WorkerMotor wm;
+	Town _town;
 
 	[SerializeField]
 	private int money;
@@ -48,22 +48,25 @@ public class ResourceController : MonoBehaviour {
 		ui.RefreshLumber ();
 		ui.RefreshIncome ();
 	}
+
 	public void BuyWorker(int value){
 		Money -= value;
 		ui.RefreshMoney ();
 	}
 
-	public void EmptyResource(GameObject worker){
-		wm = worker.GetComponent<WorkerMotor> ();
-		Lumber += wm.lumberIncome;
+	public void DecreaseCooldown(int value){
+		Money -= value;
+		Lumber -= value;
+		ui.RefreshMoney ();
 		ui.RefreshLumber ();
 	}
 
-	//	public void SellTower(GameObject fighter){ // tower satis
-	//		stat = fighter.GetComponent<FighterStats> ();
-	//		GameManager2.instance.money += stat.getCost () * 0.5f;
-	//		ui.RefreshMoney ();
-	//	}
+	public void EmptyResource(GameObject worker){
+		_town = worker.GetComponent<Town> ();
+		Lumber += _town.lumberIncome;
+		ui.RefreshLumber ();
+	}
+
 	public void FighterReward(GameObject fighter){
 		stat = fighter.GetComponent<FighterStats> ();
 		Money += stat.getGold ();

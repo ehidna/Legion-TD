@@ -4,65 +4,48 @@ using System.Collections;
 public class Town : MonoBehaviour {
 
 	[SerializeField]
-	Transform spawn;
-	[SerializeField]
-	GameObject worker;
-	GameObject[] trees;
-
-	[SerializeField]
 	private float workerCooldown;
 	private float countdown;
 
-	private int availableTreeIndex;
-	private int workerNumber;
-
 	private bool spawning;
+	public int lumberIncome;
+
+	public int cooldownPrice;
 
 	ResourceController resource;
 
 	// Use this for initialization
 	void Start () {
-		trees = GameObject.FindGameObjectsWithTag ("Tree");
 		resource = GameObject.Find ("ResourceManager").GetComponent<ResourceController> ();
-		availableTreeIndex = 0;
-		StartCoroutine ("InitiateWorker", 1);
-		StartCoroutine ("InitiateWorker", 1);
+		countdown = workerCooldown;
 	}
 
-	IEnumerator InitiateWorker(float wait){
-		yield return new WaitForSeconds (wait);
-		GameObject work = Instantiate (worker, spawn.position, spawn.rotation) as GameObject;
-		work.GetComponent<WorkerMotor> ().setTown (spawn);
-		work.GetComponent<WorkerMotor> ().setTree (trees[availableTreeIndex].transform);
-		Vector3 pos = work.transform.position;
-		pos.y = 0.5f;
-		work.transform.position = pos;
-		availableTreeIndex++;
-		workerNumber++;
-	}
-	
 	// Update is called once per frame
 	void Update () {
-		if (spawning) {
-			countdown -= 1.0f * Time.deltaTime;
-			Debug.Log (countdown.ToString ());
-			if(countdown <= 0)
-				spawning = false;
+		if(countdown <= 0){
+			resource.EmptyResource (gameObject);
+			countdown = workerCooldown;
 		}
-
+		countdown -= 1.0f * Time.deltaTime;
 	}
 
 	void OnMouseDown(){
+		HUD.instance.disableButtons (1); // enable town buttons disable others
+	}
+
+	public void IncreaseLumber(int increase){
 		if (resource.Money < 50)
 			return;
-			
+		lumberIncome += increase;
+		resource.BuyWorker (50);
+	}
 
-		if (workerNumber < trees.Length) {
-			Debug.Log ("Isci geliyorr!");
-			StartCoroutine ("InitiateWorker", workerCooldown);
-			resource.BuyWorker (50);
-			countdown = workerCooldown;
-			spawning = true;
-		}
+	public void DecreaseLumberCooldown(float time){
+		if (resource.Money < cooldownPrice || resource.Lumber < cooldownPrice)
+			return;
+
+		resource.DecreaseCooldown (cooldownPrice);
+		workerCooldown -= time;
+		cooldownPrice += 20;
 	}
 }

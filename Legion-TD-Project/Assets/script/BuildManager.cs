@@ -33,7 +33,8 @@ public class BuildManager : MonoBehaviour {
 	}
 		
 	void Enable(GameObject[] items, bool change, string tag){
-		
+		 
+
 		if (items.Length > 0) {
 			foreach (GameObject item in items) {
 				if (tag.CompareTo ("Tile") == 0) {

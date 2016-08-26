@@ -4,11 +4,16 @@ using UnityEngine.UI;
 
 [RequireComponent(typeof(Image))]
 public class HUD : MonoBehaviour {
-	
-	public static HUD instance;
-	public GameObject image;
-	private Button[] buttons;
 
+	public static HUD instance;
+
+	[System.Serializable]
+	public class Buildings{
+		public GameObject build;
+		public Button[] buttons;
+	}
+
+	public Buildings[] builds;
 	void Awake (){
 		if (instance != null){
 			Debug.LogError("More than one HUD in scene.");
@@ -18,33 +23,17 @@ public class HUD : MonoBehaviour {
 	}
 
 	void Start () {
-		buttons = gameObject.GetComponent<Image>().GetComponentsInChildren<Button>();
-		disableButtons ();
-	}
-	// Tum buttonlari aktif et
-	public void activateButtons(){
-		foreach(Button buton in buttons){
-			buton.interactable = true;
-		}
-	}
-	// Belirli buttonu aktif et
-	public void activateButton(int item){
-		for(int i=0; i<buttons.Length-4; i++){
-			if(item == i)
-				buttons[i].interactable = true;
-		}
+		foreach(Buildings item in builds)
+			item.build.SetActive (false);
 	}
 
-	public void disableButtons(){
-		foreach(Button buton in buttons){
-			buton.image.color = Color.white;
-			buton.interactable = false;
+	public void disableButtons(int index){
+		for (int i = 0; i < builds.Length; i++) {
+			if (i == index) 
+				builds [i].build.SetActive (true);
+			else 
+				builds [i].build.SetActive (false);
 		}
-	}
 
-	public void setButtonImage(Color item, int position){
-		// Button image or color add
-		buttons [position].image.color = item;
-		buttons [position].interactable = true;
 	}
 }
