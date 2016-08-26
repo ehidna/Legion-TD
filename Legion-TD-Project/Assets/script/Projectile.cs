@@ -3,14 +3,13 @@ using System.Collections;
 
 public class Projectile : MonoBehaviour {
 
-	[HideInInspector]
+	//	[HideInInspector]
 	public float damage;
 	[HideInInspector]
 	public float speed = 70f;
 
-	[SerializeField]
-	Transform destroyPlace;
-	private Transform target;
+	public Transform target;
+	private FighterController fighter;
 
 	FighterStats stat;
 	ResourceController resource;
@@ -22,6 +21,7 @@ public class Projectile : MonoBehaviour {
 	void Start(){
 		stat = target.GetComponent<FighterStats> ();
 		resource = GameObject.Find ("ResourceManager").GetComponent<ResourceController>();
+		fighter = transform.GetComponentInParent<FighterController> ();
 	}
 
 	// Update is called once per frame
@@ -45,16 +45,20 @@ public class Projectile : MonoBehaviour {
 		float hp = stat.getHealth() - damage;
 		stat.setHealth (hp);
 
-		if (target.CompareTag ("Tower"))
-			Debug.Log (hp);
 		if (hp <= 0) {
-			target.GetComponent<Renderer>().enabled = false;
+
 			if (!target.CompareTag ("Tower")) {
 				resource.FighterReward (target.gameObject);
 			}
-			target.position = new Vector3 (destroyPlace.position.x, destroyPlace.position.y, destroyPlace.position.z);
-			Destroy (target.gameObject, 0.1f);
+			TriggerExit ();
+			Destroy (target.gameObject);
 		}
 		Destroy(gameObject);
+	}
+	void TriggerExit(){ // fire all enemies to remove target their list
+		GameObject[] enemies = GameObject.FindGameObjectsWithTag (fighter.tag);
+		foreach (GameObject enemy in enemies) {
+			enemy.GetComponent<FighterController> ().ColliderExit (target.GetComponent<Collider>());
+		}
 	}
 }

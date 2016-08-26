@@ -44,7 +44,6 @@ public class BuildManager : MonoBehaviour {
 					item.GetComponent<FighterController> ().enabled = change;
 					item.GetComponent<Fighter> ().enabled = change;
 					item.GetComponent<NavMeshAgent> ().enabled = change;
-					item.GetComponent<EnemySeeker> ().enabled = change;
 					item.GetComponent<Collider> ().enabled = change;
 				}
 			}

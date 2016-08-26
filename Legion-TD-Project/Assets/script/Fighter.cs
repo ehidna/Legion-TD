@@ -6,7 +6,7 @@ public class Fighter : MonoBehaviour {
 	private float fireCountdown = 0f;
 	public bool fight;
 
-	[HideInInspector]
+	//	[HideInInspector]
 	public GameObject currentTarget;
 
 	FighterStats stats;
@@ -27,13 +27,6 @@ public class Fighter : MonoBehaviour {
 		radiusCollider = GetComponentInChildren<SphereCollider> ();
 		stats = GetComponent<FighterStats> ();
 		setRadius (stats.viewRadius);
-
-	}
-
-	void OnDisable(){
-		if(radiusCollider != null)
-			radiusCollider.enabled = false;
-		fight = false;
 	}
 
 	void Update () {
@@ -41,11 +34,9 @@ public class Fighter : MonoBehaviour {
 			radiusCollider.enabled = false;
 		else 
 			radiusCollider.enabled = true;
-
+		
 		if (currentTarget == null)
 			return;
-
-		setRadius (stats.viewRadius);
 
 		Vector3 dir = currentTarget.transform.position - transform.position;
 		Quaternion lookRotation = Quaternion.LookRotation(dir);
@@ -56,7 +47,7 @@ public class Fighter : MonoBehaviour {
 
 		if (fireCountdown <= 0f){
 			Fight();
-			fireCountdown = 1f / stats.getFireRate();
+			fireCountdown = 1.0f/stats.getFireRate();
 		}
 
 		fireCountdown -= Time.deltaTime;
@@ -67,10 +58,11 @@ public class Fighter : MonoBehaviour {
 		Projectile _bullet = bulletGO.GetComponent<Projectile>();
 		bulletGO.transform.SetParent (transform);
 
-		if (_bullet != null ) { // && currentTarget != null
+		if (_bullet != null ) {
 			_bullet.speed = stats.getProjectileSpeed ();
 			_bullet.damage = stats.getDamage ();
 			_bullet.Seek (currentTarget.transform);
 		}
 	}
+
 }

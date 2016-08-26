@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 public class FighterController : MonoBehaviour {
 
-	[HideInInspector]
+	//	[HideInInspector]
 	public List<Transform> visibleTargets = new List<Transform>();
 
 	[HideInInspector]
@@ -16,7 +16,6 @@ public class FighterController : MonoBehaviour {
 	[SerializeField]
 	private string targetTag;
 
-	Fighter _fighter;
 	EnemySeeker seek;
 	FighterStats stat;
 
@@ -40,13 +39,15 @@ public class FighterController : MonoBehaviour {
 	}
 
 	void Start () {
-		ag = transform.GetComponent<NavMeshAgent> ();
-		_fighter = transform.GetComponent<Fighter> ();
-		seek = transform.GetComponent<EnemySeeker> ();
 		stat = transform.GetComponent<FighterStats> ();
+		stat.setHealth (stat.getMaxHealth ());
+
+		ag = transform.GetComponent<NavMeshAgent> ();
 		currentPathPoint = 0;
 		nextPathPoint = pathPoints [currentPathPoint];
-		stat.setHealth (stat.getMaxHealth ());
+
+		seek = transform.GetComponent<EnemySeeker> ();
+
 	}
 
 	void Update () {
@@ -68,23 +69,9 @@ public class FighterController : MonoBehaviour {
 		} 
 	}
 
-	int FindNearestTarget(){
-		int index = 0;
-		float nearestTargetDst = Vector3.Distance (transform.position, visibleTargets [0].position);
-		for (int i = 0; i < visibleTargets.Count; i++) {
-			float dstToTarget = Vector3.Distance (transform.position, visibleTargets [i].position);
-			if (nearestTargetDst > dstToTarget) {
-				nearestTargetDst = dstToTarget;
-				index = i;
-			}
-		}
-		return index;
-	}
-
 	public void OnChildTriggerEnter(Collider other){
 		if (other.CompareTag (targetTag)) {
 			if (visibleTargets.Count == 0) {
-				_fighter.currentTarget = other.gameObject;
 				currentStatus = enemyStatus.Fight;
 				ag.Stop ();
 				seek.enabled = true;
@@ -94,18 +81,21 @@ public class FighterController : MonoBehaviour {
 	}
 
 	public void OnChildTriggerExit(Collider other){
-		if (other.CompareTag (targetTag)) {
-			int i = visibleTargets.IndexOf (other.transform);
-			visibleTargets.RemoveAt(i);
+		ColliderExit (other);
+	}
 
-			if (visibleTargets.Count > 0) {// FindNearestTarget
-				_fighter.currentTarget = visibleTargets [FindNearestTarget ()].gameObject;
-				currentStatus = enemyStatus.Fight;
-				ag.Stop ();
+	public void ColliderExit(Collider other){
+		if (!visibleTargets.Find(r=> r.transform == other.transform))
+			return;
+
+		if (other.CompareTag (targetTag)) {
+			visibleTargets.Remove(other.transform);
+			if (visibleTargets.Count > 0) {
+				if(ag != null)
+					ag.Stop ();
 				seek.enabled = true;
 			}
 			else {
-				_fighter.currentTarget = null;
 				seek.enabled = false;
 				currentStatus = enemyStatus.Move;
 				ag.Resume ();
