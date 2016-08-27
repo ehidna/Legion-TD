@@ -42,15 +42,6 @@ public class FighterStats : MonoBehaviour {
 	}
 
 	[SerializeField]
-	private Vector3 position;
-	public void setPosition(Vector3 _position){
-		position = _position;
-	}
-	public Vector3 getPosition(){
-		return position;
-	}
-
-	[SerializeField]
 	private float health;
 	public void setHealth(float _health){
 		health = _health;
@@ -61,9 +52,9 @@ public class FighterStats : MonoBehaviour {
 
 	[SerializeField]
 	private float maxHealth;
-	public void setMaxHealth(float _maxHealth){
-		maxHealth = _maxHealth;
-	}
+	//	public void setMaxHealth(float _maxHealth){
+	//		maxHealth = _maxHealth;
+	//	}
 	public float getMaxHealth(){
 		return maxHealth;
 	}
@@ -113,4 +104,24 @@ public class FighterStats : MonoBehaviour {
 	public float getFireRate(){
 		return fireRate;
 	}
+
+	[SerializeField]
+	private string damageType;
+	public void setDamageType(string _dtype){
+		damageType = _dtype;
+	}
+	public string getDamageType(){
+		return damageType;
+	}
+
+	[SerializeField]
+	private string armorType;
+	public void setArmorType(string _atype){
+		armorType = _atype;
+	}
+	public string getArmorType(){
+		return armorType;
+	}
+
+
 }

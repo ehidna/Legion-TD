@@ -13,6 +13,7 @@ public class WaveController : MonoBehaviour {
 	}
 
 	ResourceController resource;
+	ResetFighters reset;
 
 	public float timeBetweenWaves;
 
@@ -34,6 +35,7 @@ public class WaveController : MonoBehaviour {
 		waveNumber = 1;
 		waveCountdown = timeBetweenWaves;
 		resource = GameObject.Find ("ResourceManager").GetComponent<ResourceController> ();
+		reset = GetComponent<ResetFighters> ();
 		InvokeRepeating ("WaveTracker", 0f, 1f);
 	}
 
@@ -52,11 +54,14 @@ public class WaveController : MonoBehaviour {
 
 		if (waveCountdown == 0 && enemiesAlive == false) {
 			GameManager.instance.building = false;
+			HUD.instance.disableButtons (-1);
+			reset.enabled = false;
 			StartCoroutine ( SpawnWave ( Waves[waveIndex] ) );
 			return;
 		}
 		if (waveCountdown > 0) {
 			GameManager.instance.building = true;
+			reset.enabled = true;
 		}
 	}
 

@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
-using UnityEngine.Events;
+using UnityEngine.EventSystems;
+
 public class BuildManager : MonoBehaviour {
 
 	public static BuildManager instance;
@@ -12,28 +13,36 @@ public class BuildManager : MonoBehaviour {
 		}
 		instance = this;
 	}
+
 	public GameObject fighterPrefab;
+	private GameObject node;
+	public GameObject Node{
+		set{ node = value;}
+		get{ return node;}
+	}
+
+	public void SetFighter(GameObject fighter){
+		fighterToBuild = fighter;
+	}
+
 	public GameObject rect;
 	private GameObject currentRect;
 
 	void OnEnable(){
 		GameObject[] tiles = GameObject.FindGameObjectsWithTag ("Tile");
 		Enable (tiles, true, "Tile");
-		GameObject[] fighters = GameObject.FindGameObjectsWithTag ("Tower");
-		Enable (fighters, false, "Tower");
 		currentRect = Instantiate(rect, Input.mousePosition, Quaternion.identity) as GameObject;
 	}
 
 	void OnDisable(){
+		Destroy (currentRect);
 		GameObject[] tiles = GameObject.FindGameObjectsWithTag ("Tile");
 		Enable (tiles, false, "Tile");
 		GameObject[] fighters = GameObject.FindGameObjectsWithTag ("Tower");
 		Enable (fighters, true, "Tower");
-		Destroy (currentRect);
 	}
-		
+
 	void Enable(GameObject[] items, bool change, string tag){
-		 
 
 		if (items.Length > 0) {
 			foreach (GameObject item in items) {
@@ -61,13 +70,17 @@ public class BuildManager : MonoBehaviour {
 	}
 
 	void FixedUpdate(){
+		if (EventSystem.current.IsPointerOverGameObject ())
+			return;
+		if (currentRect == null)
+			return;
 		Vector3 temp = Input.mousePosition;
-		temp.z = 15f; // Set this to be the distance you want the object to be placed in front of the camera.
+		temp.z = 10f; // Set this to be the distance you want the object to be placed in front of the camera.
 		currentRect.transform.position =  Camera.main.ScreenToWorldPoint(temp);
 		Ray ray = Camera.main.ScreenPointToRay (Input.mousePosition);
 
 		RaycastHit hit;
-		if (Physics.Raycast (ray, out hit, 100)) {
+		if (Physics.Raycast (ray, out hit, Mathf.Infinity)) {
 
 			if (hit.collider.gameObject.CompareTag("Tile")) {
 				currentRect.GetComponent<Renderer> ().material.color = hit.transform.GetComponent<Node> ().color;

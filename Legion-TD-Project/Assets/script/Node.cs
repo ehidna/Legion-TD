@@ -1,9 +1,12 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEngine.EventSystems;
 
 public class Node : MonoBehaviour {
 
 	private GameObject fighter;
+	[SerializeField]
+	private GameObject backupFighter; // When fighter destroyed replace to it
 	public Vector3 positionOffset;
 
 	[HideInInspector]
@@ -11,6 +14,13 @@ public class Node : MonoBehaviour {
 
 	ResourceController resource;
 	UIController ui;
+
+	public void setFighter(){
+		Destroy (fighter);
+		if (backupFighter != null) {
+			fighter = (GameObject)Instantiate (backupFighter, transform.position + positionOffset, transform.rotation);
+		}
+	}
 
 	void Start(){
 		resource = GameObject.Find ("ResourceManager").GetComponent<ResourceController>();
@@ -25,22 +35,28 @@ public class Node : MonoBehaviour {
 	}
 
 	void OnMouseDown(){
+		if (EventSystem.current.IsPointerOverGameObject ()) // if in UI element simply return;
+			return;
+
 		if (fighter != null){
 			ui.CantBuild ();
-			//			Debug.Log("Can't build there! - TODO: Display on screen.");
 			return;
 		}
+		BuildManager.instance.Node = gameObject;
+		HUD.instance.disableButtons (2);
+	}
 
+	public void BuildFighter(){
 		GameObject fighterToBuild = BuildManager.instance.GetFighterToBuild();
 		if (resource.Money < fighterToBuild.GetComponent<FighterStats> ().getCost ()) {
 			ui.NoMoney ();
-			//			Debug.Log("No Money! - TODO: Display on screen.");
 			return;
 		} else {
 			fighter = (GameObject)Instantiate (fighterToBuild, transform.position + positionOffset, transform.rotation);
-			fighter.GetComponent<FighterStats> ().setPosition (fighter.transform.position);
+			string name = fighter.name.Substring (0, fighter.name.Length - 7);
+			backupFighter = Resources.Load(name)as GameObject;
 			resource.BuyTower (fighter);
 		}
-
+		HUD.instance.disableButtons (-1); // disable all buttons
 	}
 }

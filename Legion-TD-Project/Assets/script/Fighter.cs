@@ -47,7 +47,7 @@ public class Fighter : MonoBehaviour {
 
 		if (fireCountdown <= 0f){
 			Fight();
-			fireCountdown = 1.0f/stats.getFireRate();
+			fireCountdown = stats.getFireRate();
 		}
 
 		fireCountdown -= Time.deltaTime;

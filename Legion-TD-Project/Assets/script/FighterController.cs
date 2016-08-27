@@ -26,18 +26,6 @@ public class FighterController : MonoBehaviour {
 	private Transform nextPathPoint;
 	private float nextWaypointDistance = 1;
 
-	void OnDisable(){
-		currentStatus = enemyStatus.Idle;
-		Reset (); //position, stat vb.
-	}
-
-	void Reset(){
-		if (stat == null)
-			return;
-		transform.position = stat.getPosition ();
-		stat.setHealth (stat.getMaxHealth ());
-	}
-
 	void Start () {
 		stat = transform.GetComponent<FighterStats> ();
 		stat.setHealth (stat.getMaxHealth ());
