@@ -4,6 +4,9 @@ using System.Collections;
 public class Town : MonoBehaviour {
 
 	[SerializeField]
+	GameObject numberEffect;
+
+	[SerializeField]
 	private float workerCooldown;
 	private float countdown;
 
@@ -25,6 +28,7 @@ public class Town : MonoBehaviour {
 		if(countdown <= 0){
 			resource.EmptyResource (gameObject);
 			countdown = workerCooldown;
+			NumberEffect ();
 		}
 		countdown -= 1.0f * Time.deltaTime;
 	}
@@ -47,5 +51,15 @@ public class Town : MonoBehaviour {
 		resource.DecreaseCooldown (cooldownPrice);
 		workerCooldown -= time;
 		cooldownPrice += 20;
+	}
+
+	void NumberEffect(){
+		Vector3 pos = transform.position;
+		pos.y += 1; 
+		GameObject effect = Instantiate (numberEffect, pos, transform.rotation) as GameObject;
+		TextMesh text = effect.GetComponent<TextMesh> ();
+		text.color = Color.green;
+		text.text  = "+" + lumberIncome;
+		Destroy (effect, 1);
 	}
 }

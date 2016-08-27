@@ -9,6 +9,8 @@ public class Fighter : MonoBehaviour {
 	//	[HideInInspector]
 	public GameObject currentTarget;
 
+	ArmorDamageTranslation adt;
+
 	FighterStats stats;
 
 	[SerializeField]
@@ -27,14 +29,14 @@ public class Fighter : MonoBehaviour {
 		radiusCollider = GetComponentInChildren<SphereCollider> ();
 		stats = GetComponent<FighterStats> ();
 		setRadius (stats.viewRadius);
+		adt = GameObject.Find ("Translate").GetComponent<ArmorDamageTranslation> ();
+
 	}
 
 	void Update () {
-		if (GameManager.instance.building) 
-			radiusCollider.enabled = false;
-		else 
+		if (!GameManager.instance.building) 
 			radiusCollider.enabled = true;
-		
+
 		if (currentTarget == null)
 			return;
 
@@ -60,7 +62,7 @@ public class Fighter : MonoBehaviour {
 
 		if (_bullet != null ) {
 			_bullet.speed = stats.getProjectileSpeed ();
-			_bullet.damage = stats.getDamage ();
+			_bullet.damage =  adt.DamageReduction(stats.getDamageType(), currentTarget.GetComponent<FighterStats>().getArmorType(), stats.getDamage ());
 			_bullet.Seek (currentTarget.transform);
 		}
 	}

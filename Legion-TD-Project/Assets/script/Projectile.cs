@@ -8,6 +8,8 @@ public class Projectile : MonoBehaviour {
 	[HideInInspector]
 	public float speed = 70f;
 
+	public GameObject numberEffect;
+
 	public Transform target;
 	private FighterController fighter;
 
@@ -49,6 +51,15 @@ public class Projectile : MonoBehaviour {
 
 			if (!target.CompareTag ("Tower")) {
 				resource.FighterReward (target.gameObject);
+
+				// Number effect for gold
+				Vector3 pos = target.position;
+				pos.y += 1; 
+				GameObject effect = Instantiate (numberEffect, pos, transform.rotation) as GameObject;
+				TextMesh text = effect.GetComponent<TextMesh> ();
+				text.color = Color.yellow;
+				text.text  = "+" + stat.getGold();
+				Destroy (effect, 1);
 			}
 			TriggerExit ();
 			Destroy (target.gameObject);
