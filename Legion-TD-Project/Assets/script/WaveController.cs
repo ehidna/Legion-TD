@@ -16,6 +16,7 @@ public class WaveController : MonoBehaviour {
 	ResetFighters reset;
 
 	public float timeBetweenWaves;
+	public GameObject waveInfo;
 
 	public Wave[] Waves;
 
@@ -43,9 +44,18 @@ public class WaveController : MonoBehaviour {
 		if (waveCountdown == 0 && !spawning) {
 			if (GameObject.FindGameObjectsWithTag ("Enemy").Length == 0) {
 				enemiesAlive = false;
+
+				waveInfo.SetActive (true);
+				waveInfo.GetComponent<WaveInfo> ().WaveCleared (resource.Money, waveIndex + 1, timeBetweenWaves, resource.Income);
+
 				waveCountdown = timeBetweenWaves;
 				resource.AddIncomeToMoney ();
 			}	
+		}
+		if (!spawning && waveCountdown > 0) {
+			GameManager.instance.building = true;
+			reset.enabled = true;
+			Debug.Log ("naber");
 		}
 	}
 
@@ -57,10 +67,6 @@ public class WaveController : MonoBehaviour {
 			reset.enabled = false;
 			StartCoroutine ( SpawnWave ( Waves[waveIndex] ) );
 			return;
-		}
-		if (waveCountdown > 0) {
-			GameManager.instance.building = true;
-			reset.enabled = true;
 		}
 	}
 
@@ -84,6 +90,7 @@ public class WaveController : MonoBehaviour {
 			mercenaries[i].tag = "Enemy"; 
 			mercenaries[i].GetComponent<NavMeshAgent> ().enabled = true;
 			mercenaries[i].GetComponent<FighterController> ().currentStatus = FighterController.enemyStatus.Move;
+			mercenaries[i].GetComponent<Collider> ().enabled = true;
 		}
 
 		waveNumber += 1;

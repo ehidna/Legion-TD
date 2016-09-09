@@ -7,15 +7,15 @@ public class EnemySeeker : MonoBehaviour {
 	FighterStats stat;
 	Fighter _fighter;
 	FighterController fighter;
+	NavMeshObstacle obs;
 
-	// Use this for initialization
 	void Start () {
 		stat = GetComponent<FighterStats> (); 
 		_fighter = GetComponent<Fighter> ();
 		fighter = GetComponent<FighterController> ();
+		obs = GetComponent<NavMeshObstacle> ();
 	}
 
-	// Update is called once per frame
 	void Update () {	
 		if (_fighter.currentTarget == null) {
 			Seek ();
@@ -23,10 +23,16 @@ public class EnemySeeker : MonoBehaviour {
 
 		if (Vector3.Distance (transform.position, _fighter.currentTarget.transform.position) <=  Mathf.Sqrt(stat.getRange ()) ) {
 			_fighter.fight = true;
+			fighter.ag.avoidancePriority = 30;
+			fighter.ag.enabled = false;
+			obs.enabled = true;
 		} else {
-			Vector3 dir =  _fighter.currentTarget.transform.position - transform.position;
-			transform.Translate(dir.normalized * fighter.ag.speed * Time.deltaTime, Space.World);
 			_fighter.fight = false;
+			obs.enabled = false;
+			fighter.ag.enabled = true;
+			fighter.SetDestination (_fighter.currentTarget.transform);
+
+			fighter.ag.avoidancePriority = 50;
 		}
 	}
 	void Seek(){
@@ -38,6 +44,7 @@ public class EnemySeeker : MonoBehaviour {
 			fighter.currentStatus = FighterController.enemyStatus.Move;
 		}
 	}
+
 	int FindNearestTarget(){
 		fighter.visibleTargets.RemoveAll(target => target == null);
 		int index = 0;

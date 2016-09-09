@@ -18,6 +18,7 @@ public class FighterController : MonoBehaviour {
 
 	EnemySeeker seek;
 	FighterStats stat;
+	NavMeshObstacle obs;
 
 	[Header("PATH")]
 	[SerializeField]
@@ -27,15 +28,18 @@ public class FighterController : MonoBehaviour {
 	private float nextWaypointDistance = 1;
 
 	void Start () {
-		stat = transform.GetComponent<FighterStats> ();
+		stat = GetComponent<FighterStats> ();
 		stat.setHealth (stat.getMaxHealth ());
 
-		ag = transform.GetComponent<NavMeshAgent> ();
+		ag = GetComponent<NavMeshAgent> ();
+		ag.speed = stat.getSpeed ()/2;
+		ag.acceleration = Mathf.Pow (ag.speed, 2);
+
 		currentPathPoint = 0;
 		nextPathPoint = pathPoints [currentPathPoint];
 
-		seek = transform.GetComponent<EnemySeeker> ();
-
+		seek = GetComponent<EnemySeeker> ();
+		obs = GetComponent<NavMeshObstacle> ();
 	}
 
 	void Update () {
@@ -44,6 +48,11 @@ public class FighterController : MonoBehaviour {
 	}
 
 	private void Move (){
+		obs.enabled = false;
+
+		if (!ag.isActiveAndEnabled)
+			ag.enabled = true;
+
 		if (Vector3.Distance (transform.position, nextPathPoint.position) < nextWaypointDistance) {
 			currentPathPoint++;
 			if (currentPathPoint == pathPoints.Length) {
@@ -57,11 +66,17 @@ public class FighterController : MonoBehaviour {
 		} 
 	}
 
+	public void SetDestination(Transform target){
+		ag.SetDestination (target.position);
+		ag.Resume ();
+	}
+
 	public void OnChildTriggerEnter(Collider other){
 		if (other.CompareTag (targetTag)) {
 			if (visibleTargets.Count == 0) {
 				currentStatus = enemyStatus.Fight;
-				ag.Stop ();
+				if(ag.isActiveAndEnabled)
+					ag.Stop ();
 				seek.enabled = true;
 			}
 			visibleTargets.Add (other.gameObject.transform);
@@ -79,14 +94,15 @@ public class FighterController : MonoBehaviour {
 		if (other.CompareTag (targetTag)) {
 			visibleTargets.Remove(other.transform);
 			if (visibleTargets.Count > 0) {
-				if(ag != null)
+				if(ag.isActiveAndEnabled)
 					ag.Stop ();
 				seek.enabled = true;
 			}
 			else {
 				seek.enabled = false;
 				currentStatus = enemyStatus.Move;
-				ag.Resume ();
+				if(ag.isActiveAndEnabled)
+					ag.Resume ();
 			}
 		}
 	}
