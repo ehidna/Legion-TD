@@ -54,7 +54,6 @@ public class WaveController : MonoBehaviour {
 
 		if (waveCountdown == 0 && enemiesAlive == false) {
 			GameManager.instance.building = false;
-			HUD.instance.disableButtons (-1);
 			reset.enabled = false;
 			StartCoroutine ( SpawnWave ( Waves[waveIndex] ) );
 			return;

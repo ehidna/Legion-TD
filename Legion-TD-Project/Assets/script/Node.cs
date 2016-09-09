@@ -9,11 +9,9 @@ public class Node : MonoBehaviour {
 	private GameObject backupFighter; // When fighter destroyed replace to it
 	public Vector3 positionOffset;
 
-	[HideInInspector]
-	public Color color;
-
 	ResourceController resource;
 	UIController ui;
+	public bool hit = false;
 
 	public void setFighter(){
 		Destroy (fighter);
@@ -28,35 +26,31 @@ public class Node : MonoBehaviour {
 	}
 
 	void Update(){
-		if (fighter != null)
-			color = Color.red;
-		else
-			color = Color.green;
+		if (fighter != null) {
+			hit = false;
+		}
+		else {
+			hit = true;
+		}
 	}
 
-	void OnMouseDown(){
-		if (EventSystem.current.IsPointerOverGameObject ()) // if in UI element simply return;
-			return;
-
+	public void CantBuild(){
 		if (fighter != null){
 			ui.CantBuild ();
 			return;
 		}
-		BuildManager.instance.Node = gameObject;
-		HUD.instance.disableButtons (2);
 	}
 
-	public void BuildFighter(){
-		GameObject fighterToBuild = BuildManager.instance.GetFighterToBuild();
+	public void BuildFighter(GameObject fighterToBuild){
 		if (resource.Money < fighterToBuild.GetComponent<FighterStats> ().getCost ()) {
 			ui.NoMoney ();
 			return;
 		} else {
+			positionOffset = new Vector3(0, fighterToBuild.transform.localScale.y, 0);
 			fighter = (GameObject)Instantiate (fighterToBuild, transform.position + positionOffset, transform.rotation);
 			string name = fighter.name.Substring (0, fighter.name.Length - 7);
 			backupFighter = Resources.Load(name)as GameObject;
 			resource.BuyTower (fighter);
 		}
-		HUD.instance.disableButtons (-1); // disable all buttons
 	}
 }

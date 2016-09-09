@@ -3,6 +3,8 @@ using System.Collections;
 
 public class GameManager : MonoBehaviour {
 
+	private GameObject dragDropPlatform;
+
 	public static GameManager instance;
 	void Awake (){
 		if (instance != null){
@@ -12,16 +14,21 @@ public class GameManager : MonoBehaviour {
 		instance = this;
 	}
 
+	void Start(){
+		dragDropPlatform = GameObject.Find ("DragDropPlatform");	
+	}
+
 	[HideInInspector]
 	public bool building;
-	
+
 	// Update is called once per frame
 	void Update () {
-//		if(BuildManager.instance == null)
-//			return;
-		if (!building)
+		if (!building) {
+			dragDropPlatform.SetActive (false);
 			BuildManager.instance.enabled = false;
-		else
+		} else {
+			dragDropPlatform.SetActive (true);
 			BuildManager.instance.enabled = true;
+		}
 	}
 }

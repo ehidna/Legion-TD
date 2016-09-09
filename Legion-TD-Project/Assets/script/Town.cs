@@ -17,10 +17,14 @@ public class Town : MonoBehaviour {
 
 	ResourceController resource;
 
+	GameObject townUI;
+
 	// Use this for initialization
 	void Start () {
 		resource = GameObject.Find ("ResourceManager").GetComponent<ResourceController> ();
+		townUI = GameObject.Find ("TownUI");
 		countdown = workerCooldown;
+		townUI.SetActive (false);
 	}
 
 	// Update is called once per frame
@@ -34,7 +38,7 @@ public class Town : MonoBehaviour {
 	}
 
 	void OnMouseDown(){
-		HUD.instance.disableButtons (1); // enable town buttons disable others
+		townUI.SetActive (true);
 	}
 
 	public void IncreaseLumber(int increase){
@@ -61,5 +65,9 @@ public class Town : MonoBehaviour {
 		text.color = Color.green;
 		text.text  = "+" + lumberIncome;
 		Destroy (effect, 1);
+	}
+
+	public void Close(){
+		townUI.SetActive (false);
 	}
 }
