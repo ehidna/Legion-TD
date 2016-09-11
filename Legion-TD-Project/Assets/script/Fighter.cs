@@ -10,14 +10,18 @@ public class Fighter : MonoBehaviour {
 	public GameObject currentTarget;
 
 	ArmorDamageTranslation adt;
-
+	FighterAnimator anim;
 	FighterStats stats;
+
+	public bool exited;
 
 	[SerializeField]
 	GameObject bullet;
 
 	[SerializeField]
 	Transform firePoint;
+
+	public GameObject healthBar;
 
 	SphereCollider radiusCollider;
 
@@ -30,7 +34,8 @@ public class Fighter : MonoBehaviour {
 		stats = GetComponent<FighterStats> ();
 		setRadius (stats.viewRadius);
 		adt = GameObject.Find ("Translate").GetComponent<ArmorDamageTranslation> ();
-
+		anim = GetComponent<FighterAnimator>();
+		exited = false;
 	}
 
 	void Update () {
@@ -48,7 +53,11 @@ public class Fighter : MonoBehaviour {
 			return;
 
 		if (fireCountdown <= 0f){
-			Fight();
+			if (anim != null) 
+				anim.StartPunch ();
+			else
+				Fight();
+
 			fireCountdown = stats.getFireRate();
 		}
 
@@ -56,11 +65,17 @@ public class Fighter : MonoBehaviour {
 	}
 
 	public void Fight(){
+		if (currentTarget == null)
+			return;
 		GameObject bulletGO = (GameObject)Instantiate(bullet, firePoint.position, firePoint.rotation);
 		Projectile _bullet = bulletGO.GetComponent<Projectile>();
+		if (anim != null) {
+			//			bulletGO.GetComponent<Renderer> ().enabled = false;
+			anim.ExitPunch();
+		}
 		bulletGO.transform.SetParent (transform);
 
-		if (_bullet != null ) {
+		if (_bullet != null) {
 			_bullet.speed = stats.getProjectileSpeed ();
 			_bullet.damage =  adt.DamageReduction(stats.getDamageType(), currentTarget.GetComponent<FighterStats>().getArmorType(), stats.getDamage ());
 			_bullet.Seek (currentTarget.transform);

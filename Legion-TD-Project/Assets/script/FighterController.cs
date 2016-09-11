@@ -18,6 +18,7 @@ public class FighterController : MonoBehaviour {
 
 	EnemySeeker seek;
 	FighterStats stat;
+	FighterAnimator anim;
 	NavMeshObstacle obs;
 
 	[Header("PATH")]
@@ -39,6 +40,7 @@ public class FighterController : MonoBehaviour {
 		nextPathPoint = pathPoints [currentPathPoint];
 
 		seek = GetComponent<EnemySeeker> ();
+		anim = GetComponent<FighterAnimator> ();
 		obs = GetComponent<NavMeshObstacle> ();
 	}
 
@@ -62,6 +64,8 @@ public class FighterController : MonoBehaviour {
 		//			FindNextPoint ();
 		nextPathPoint = pathPoints [currentPathPoint];
 		if (visibleTargets.Count == 0) {
+			if(anim != null)
+				anim.SetAnimBool ("walk", 1);
 			ag.SetDestination (nextPathPoint.position);
 		} 
 	}

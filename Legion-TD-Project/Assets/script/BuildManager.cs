@@ -6,7 +6,7 @@ public class BuildManager : MonoBehaviour {
 
 	public static BuildManager instance;
 
-	void Awake (){
+	void Start (){
 		if (instance != null){
 			Debug.Log("More than one BuildManager in scene!");
 			return;

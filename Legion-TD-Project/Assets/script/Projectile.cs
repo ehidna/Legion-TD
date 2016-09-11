@@ -44,6 +44,8 @@ public class Projectile : MonoBehaviour {
 		transform.Translate(dir.normalized * distanceThisFrame, Space.World);
 	}
 	void HitTarget (){
+		if(!target.GetComponent<Fighter>().healthBar.activeSelf)
+			target.GetComponent<Fighter> ().healthBar.SetActive (true);
 		float hp = stat.getHealth() - damage;
 		stat.setHealth (hp);
 
@@ -52,7 +54,7 @@ public class Projectile : MonoBehaviour {
 			if (!target.CompareTag ("Tower")) {
 				resource.FighterReward (target.gameObject);
 
-				// Number effect for gold
+				// Number effect
 				Vector3 pos = target.position;
 				pos.y += 1; 
 				GameObject effect = Instantiate (numberEffect, pos, transform.rotation) as GameObject;

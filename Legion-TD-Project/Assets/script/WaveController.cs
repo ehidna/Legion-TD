@@ -55,7 +55,6 @@ public class WaveController : MonoBehaviour {
 		if (!spawning && waveCountdown > 0) {
 			GameManager.instance.building = true;
 			reset.enabled = true;
-			Debug.Log ("naber");
 		}
 	}
 

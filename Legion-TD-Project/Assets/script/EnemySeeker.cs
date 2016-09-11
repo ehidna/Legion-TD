@@ -7,12 +7,14 @@ public class EnemySeeker : MonoBehaviour {
 	FighterStats stat;
 	Fighter _fighter;
 	FighterController fighter;
+	FighterAnimator anim;
 	NavMeshObstacle obs;
 
 	void Start () {
 		stat = GetComponent<FighterStats> (); 
 		_fighter = GetComponent<Fighter> ();
 		fighter = GetComponent<FighterController> ();
+		anim = GetComponent<FighterAnimator> ();
 		obs = GetComponent<NavMeshObstacle> ();
 	}
 
@@ -22,11 +24,17 @@ public class EnemySeeker : MonoBehaviour {
 		}
 
 		if (Vector3.Distance (transform.position, _fighter.currentTarget.transform.position) <=  Mathf.Sqrt(stat.getRange ()) ) {
+			if(anim != null)
+				anim.Idle ();
 			_fighter.fight = true;
 			fighter.ag.avoidancePriority = 30;
 			fighter.ag.enabled = false;
 			obs.enabled = true;
 		} else {
+			//			Vector3 dir =  _fighter.currentTarget.transform.position - transform.position;
+			if(anim != null)
+				anim.SetAnimBool ("walk", 1);
+			//			transform.Translate(dir.normalized * fighter.ag.speed * Time.deltaTime, Space.World);
 			_fighter.fight = false;
 			obs.enabled = false;
 			fighter.ag.enabled = true;
