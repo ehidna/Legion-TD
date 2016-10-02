@@ -50,11 +50,6 @@ public class FighterController : MonoBehaviour {
 	}
 
 	private void Move (){
-		obs.enabled = false;
-
-		if (!ag.isActiveAndEnabled)
-			ag.enabled = true;
-
 		if (Vector3.Distance (transform.position, nextPathPoint.position) < nextWaypointDistance) {
 			currentPathPoint++;
 			if (currentPathPoint == pathPoints.Length) {
@@ -63,11 +58,7 @@ public class FighterController : MonoBehaviour {
 		}
 		//			FindNextPoint ();
 		nextPathPoint = pathPoints [currentPathPoint];
-		if (visibleTargets.Count == 0) {
-			if(anim != null)
-				anim.SetAnimBool ("walk", 1);
-			ag.SetDestination (nextPathPoint.position);
-		} 
+		WalkAnim (nextPathPoint);
 	}
 
 	public void SetDestination(Transform target){
@@ -75,12 +66,30 @@ public class FighterController : MonoBehaviour {
 		ag.Resume ();
 	}
 
+	public void WalkAnim(Transform position){
+		obs.enabled = false;
+		ag.enabled = true;
+		SetDestination (position);
+		if(anim != null)
+			anim.SetAnimBool ("walk", 1);
+		ag.avoidancePriority = 50;
+	}
+
+	public void FightAnimPrepare(){ 
+		currentStatus = enemyStatus.Fight;
+		ag.avoidancePriority = 30;
+		ag.enabled = false;
+		obs.enabled = true;
+	}
+
+	public void IdleAnim(){
+		if(anim != null)
+			anim.Idle ();
+	}
+
 	public void OnChildTriggerEnter(Collider other){
 		if (other.CompareTag (targetTag)) {
 			if (visibleTargets.Count == 0) {
-				currentStatus = enemyStatus.Fight;
-				if(ag.isActiveAndEnabled)
-					ag.Stop ();
 				seek.enabled = true;
 			}
 			visibleTargets.Add (other.gameObject.transform);
@@ -98,15 +107,11 @@ public class FighterController : MonoBehaviour {
 		if (other.CompareTag (targetTag)) {
 			visibleTargets.Remove(other.transform);
 			if (visibleTargets.Count > 0) {
-				if(ag.isActiveAndEnabled)
-					ag.Stop ();
 				seek.enabled = true;
 			}
 			else {
 				seek.enabled = false;
 				currentStatus = enemyStatus.Move;
-				if(ag.isActiveAndEnabled)
-					ag.Resume ();
 			}
 		}
 	}

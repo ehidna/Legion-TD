@@ -42,15 +42,10 @@ public class Node : MonoBehaviour {
 	}
 
 	public void BuildFighter(GameObject fighterToBuild){
-		if (resource.Money < fighterToBuild.GetComponent<FighterStats> ().getCost ()) {
-			ui.NoMoney ();
-			return;
-		} else {
-			positionOffset = new Vector3(0, fighterToBuild.transform.localScale.y, 0);
-			fighter = (GameObject)Instantiate (fighterToBuild, transform.position + positionOffset, transform.rotation);
-			string name = fighter.name.Substring (0, fighter.name.Length - 7);
-			backupFighter = Resources.Load(name)as GameObject;
-			resource.BuyTower (fighter);
-		}
+		positionOffset = new Vector3(0, fighterToBuild.transform.localScale.y, 0);
+		fighter = (GameObject)Instantiate (fighterToBuild, transform.position + positionOffset, transform.rotation);
+		string name = fighter.name.Substring (0, fighter.name.Length - 7);
+		backupFighter = Resources.Load(name)as GameObject;
+		resource.BuyTower (fighter);
 	}
 }

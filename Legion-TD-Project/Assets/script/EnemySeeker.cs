@@ -31,10 +31,8 @@ public class EnemySeeker : MonoBehaviour {
 			fighter.ag.enabled = false;
 			obs.enabled = true;
 		} else {
-			//			Vector3 dir =  _fighter.currentTarget.transform.position - transform.position;
 			if(anim != null)
 				anim.SetAnimBool ("walk", 1);
-			//			transform.Translate(dir.normalized * fighter.ag.speed * Time.deltaTime, Space.World);
 			_fighter.fight = false;
 			obs.enabled = false;
 			fighter.ag.enabled = true;

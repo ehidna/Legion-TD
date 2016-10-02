@@ -3,7 +3,7 @@ using System.Collections;
 
 public class PunchAnimation : StateMachineBehaviour {
 
-	 // OnStateEnter is called when a transition starts and the state machine starts to evaluate this state
+	// OnStateEnter is called when a transition starts and the state machine starts to evaluate this state
 	//override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
 	//
 	//}
@@ -13,9 +13,14 @@ public class PunchAnimation : StateMachineBehaviour {
 	//
 	//}
 
-//	 OnStateExit is called when a transition ends and the state machine finishes evaluating this state
+	//	 OnStateExit is called when a transition ends and the state machine finishes evaluating this state
 	override public void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
-		animator.gameObject.GetComponent<Fighter> ().Fight();
+		Fighter fighter =  animator.gameObject.GetComponent<Fighter> ();
+		fighter.Fight ();
+		if (fighter.currentType == Fighter.FighterType.Melee) {
+			GameObject bullet = (GameObject)Instantiate (fighter.bullet, fighter.transform.position, Quaternion.identity);
+			Destroy (bullet, 0.2f);
+		}
 	}
 
 	// OnStateMove is called right after Animator.OnAnimatorMove(). Code that processes and affects root motion should be implemented here
