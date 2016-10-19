@@ -16,8 +16,6 @@ public class Fighter : MonoBehaviour {
 	FighterAnimator anim;
 	FighterStats stats;
 
-	public bool exited;
-
 	//	[SerializeField]
 	public GameObject bullet;
 
@@ -25,9 +23,9 @@ public class Fighter : MonoBehaviour {
 	Transform firePoint;
 
 	public GameObject numberEffect;
-//	public GameObject muzzleFlash;
+	public GameObject muzzleFlash;
 	public GameObject healthBar;
-//	public GameObject hitEffect;
+	public GameObject hitEffect;
 
 	SphereCollider radiusCollider;
 	ResourceController resource;
@@ -43,7 +41,6 @@ public class Fighter : MonoBehaviour {
 		adt = GameObject.Find ("Translate").GetComponent<ArmorDamageTranslation> ();
 		resource = GameObject.Find ("ResourceManager").GetComponent<ResourceController>();
 		anim = GetComponent<FighterAnimator>();
-		exited = false;
 	}
 
 	void Update () {
@@ -89,11 +86,11 @@ public class Fighter : MonoBehaviour {
 		} else {
 			GameObject bulletGO = (GameObject)Instantiate(bullet, firePoint.position, firePoint.rotation);
 			Projectile _bullet = bulletGO.GetComponent<Projectile>();	
-//			if (muzzleFlash != null) {
-//				GameObject muzzle = (GameObject)Instantiate (muzzleFlash, firePoint.position, firePoint.rotation);
-//				muzzle.transform.SetParent (firePoint);
-//				Destroy (muzzle, 1f);
-//			}
+			if (muzzleFlash != null) {
+				GameObject muzzle = (GameObject)Instantiate (muzzleFlash, firePoint.position, firePoint.rotation);
+				muzzle.transform.SetParent (firePoint);
+				Destroy (muzzle, 1f);
+			}
 
 			bulletGO.transform.SetParent (transform);
 
@@ -118,10 +115,10 @@ public class Fighter : MonoBehaviour {
 		hp = stat.getHealth() - damage;
 		stat.setHealth (hp);
 
-//		if (hitEffect != null) {
-//			GameObject hitE = (GameObject)Instantiate (hitEffect, currentTarget.transform.position, Quaternion.identity);
-//			Destroy (hitE, 1.5f);
-//		}
+		if (hitEffect != null) {
+			GameObject hitE = (GameObject)Instantiate (hitEffect, currentTarget.transform.position, Quaternion.identity);
+			Destroy (hitE, 1.5f);
+		}
 	}
 
 	public bool hpCheck{get{ return hp <= 0; }}

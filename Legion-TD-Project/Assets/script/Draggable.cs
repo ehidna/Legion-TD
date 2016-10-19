@@ -6,15 +6,13 @@ public class Draggable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDra
 
 	public GameObject fighterToBuild;
 	private GameObject temporary;
-	[SerializeField]
-	public Transform placeToDrop;
+
 	ResourceController resource;
 	UIController ui;
 
 	void Start(){
 		resource = GameObject.Find ("ResourceManager").GetComponent<ResourceController>();
 		ui = GameObject.Find ("UIManager").GetComponent<UIController>();			
-
 	}
 
 	public void OnBeginDrag(PointerEventData data){
