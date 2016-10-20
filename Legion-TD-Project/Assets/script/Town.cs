@@ -16,29 +16,29 @@ public class Town : MonoBehaviour {
 	public int cooldownPrice;
 
 	ResourceController resource;
-
 	GameObject townUI;
+
 
 	// Use this for initialization
 	void Start () {
-		resource = GameObject.Find ("ResourceManager").GetComponent<ResourceController> ();
-		townUI = GameObject.Find ("TownUI");
+		resource = GameObject.Find("ResourceManager").GetComponent<ResourceController>();
 		countdown = workerCooldown;
+		townUI = GameObject.Find ("TownUI");
 		townUI.SetActive (false);
 	}
 
 	// Update is called once per frame
 	void Update () {
 		if(countdown <= 0){
-			resource.EmptyResource (gameObject);
+			resource.EmptyIncome (gameObject);
 			countdown = workerCooldown;
-			NumberEffect ();
+			resource.NumberEffect (transform, "+", lumberIncome, Color.green);
 		}
 		countdown -= 1.0f * Time.deltaTime;
 	}
 
 	void OnMouseDown(){
-		townUI.SetActive (true);
+		townUI.SetActive(true);
 	}
 
 	public void IncreaseLumber(int increase){
@@ -55,16 +55,6 @@ public class Town : MonoBehaviour {
 		resource.DecreaseCooldown (cooldownPrice);
 		workerCooldown -= time;
 		cooldownPrice += 20;
-	}
-
-	void NumberEffect(){
-		Vector3 pos = transform.position;
-		pos.y += 1; 
-		GameObject effect = Instantiate (numberEffect, pos, transform.rotation) as GameObject;
-		TextMesh text = effect.GetComponent<TextMesh> ();
-		text.color = Color.green;
-		text.text  = "+" + lumberIncome;
-		Destroy (effect, 1);
 	}
 
 	public void Close(){

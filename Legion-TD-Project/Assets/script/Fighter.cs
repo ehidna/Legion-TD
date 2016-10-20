@@ -9,44 +9,33 @@ public class Fighter : MonoBehaviour {
 	public enum FighterType{Melee, Range};
 	public FighterType currentType;
 
-	//	[HideInInspector]
-	public GameObject currentTarget;
-
 	ArmorDamageTranslation adt;
 	FighterAnimator anim;
 	FighterStats stats;
 
-	//	[SerializeField]
-	public GameObject bullet;
-
+	public bool king = false;
 	[SerializeField]
 	Transform firePoint;
 
-	public GameObject numberEffect;
+	public GameObject currentTarget;
+
+	public GameObject bullet;
+	public GameObject evolveable;
+
 	public GameObject muzzleFlash;
 	public GameObject healthBar;
 	public GameObject hitEffect;
 
-	SphereCollider radiusCollider;
 	ResourceController resource;
 
-	public void setRadius(float rad){
-		radiusCollider.radius = rad;
-	}
-
 	void Start () {
-		radiusCollider = GetComponentInChildren<SphereCollider> ();
 		stats = GetComponent<FighterStats> ();
-		setRadius (stats.viewRadius);
 		adt = GameObject.Find ("Translate").GetComponent<ArmorDamageTranslation> ();
 		resource = GameObject.Find ("ResourceManager").GetComponent<ResourceController>();
 		anim = GetComponent<FighterAnimator>();
 	}
 
 	void Update () {
-		if (!GameManager.instance.building) 
-			radiusCollider.enabled = true;
-
 		if (currentTarget == null)
 			return;
 
@@ -108,12 +97,13 @@ public class Fighter : MonoBehaviour {
 
 	private float hp;
 	public void Damage(float damage){
-		if(!currentTarget.GetComponent<Fighter>().healthBar.activeSelf)
+		Fighter fighter = currentTarget.GetComponent<Fighter> ();
+		if(!fighter.king && !fighter.healthBar.activeSelf)
 			currentTarget.GetComponent<Fighter> ().healthBar.SetActive (true);
 
-		FighterStats stat = currentTarget.GetComponent<FighterStats> ();
-		hp = stat.getHealth() - damage;
-		stat.setHealth (hp);
+		FighterStats target_stat = currentTarget.GetComponent<FighterStats> ();
+		hp = target_stat.getHealth() - damage;
+		target_stat.setHealth (hp);
 
 		if (hitEffect != null) {
 			GameObject hitE = (GameObject)Instantiate (hitEffect, currentTarget.transform.position, Quaternion.identity);
@@ -124,16 +114,13 @@ public class Fighter : MonoBehaviour {
 	public bool hpCheck{get{ return hp <= 0; }}
 
 	public void Dead(string tag){
-		if (!currentTarget.CompareTag ("Tower")) {
+		if (!currentTarget.CompareTag ("Tower") && !king) {
 			resource.FighterReward (currentTarget);
 			// Number effect
-			Vector3 pos = currentTarget.transform.position;
-			pos.y += 1; 
-			GameObject effect = Instantiate (numberEffect, pos, transform.rotation) as GameObject;
-			TextMesh text = effect.GetComponent<TextMesh> ();
-			text.color = Color.yellow;
-			text.text  = "+" + currentTarget.GetComponent<FighterStats>().getGold();
-			Destroy (effect, 1);
+			resource.NumberEffect (currentTarget.transform, "+", currentTarget.GetComponent<FighterStats>().getGold(), Color.yellow);
+		}
+		if (king) {
+			resource.KingReward (currentTarget);
 		}
 		TriggerExit ();
 		Destroy (currentTarget);

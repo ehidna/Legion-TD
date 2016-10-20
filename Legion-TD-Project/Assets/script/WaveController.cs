@@ -9,19 +9,19 @@ public class WaveController : MonoBehaviour {
 		public Transform enemy;
 		public int count;
 		public float spawnRate;
-		public GameObject SpawnPoint;
+		public Transform SpawnPoint;
 	}
+	public Wave[] Waves;
 
 	ResourceController resource;
 	ResetFighters reset;
 
-	public float timeBetweenWaves;
+	private GameObject dragDropPlatform;
 	public GameObject waveInfo;
-
-	public Wave[] Waves;
 
 	public bool enemiesAlive = false;
 	public bool spawning = false;
+	public float timeBetweenWaves;
 	private static float _waveCountdown = 0f;
 	public static float waveCountdown {
 		get { return _waveCountdown; }
@@ -35,26 +35,31 @@ public class WaveController : MonoBehaviour {
 	void Start () {
 		waveNumber = 1;
 		waveCountdown = timeBetweenWaves;
-		resource = GameObject.Find ("ResourceManager").GetComponent<ResourceController> ();
 		reset = GetComponent<ResetFighters> ();
+		resource = GameObject.Find ("ResourceManager").GetComponent<ResourceController>();
+		dragDropPlatform = GameObject.Find ("DragDropPlatform");
 		InvokeRepeating ("WaveTracker", 0f, 1f);
 	}
 
 	void WaveTracker () {
 		if (waveCountdown == 0 && !spawning) {
 			if (GameObject.FindGameObjectsWithTag ("Enemy").Length == 0) {
+				waveNumber += 1;
 				enemiesAlive = false;
 
 				waveInfo.SetActive (true);
-				waveInfo.GetComponent<WaveInfo> ().WaveCleared (resource.Money, waveIndex + 1, timeBetweenWaves, resource.Income);
-
+				waveInfo.GetComponent<WaveInfo> ().WaveCleared (resource.Money, waveIndex + 1, timeBetweenWaves, resource.Income, resource.kingKills);
 				waveCountdown = timeBetweenWaves;
+
 				resource.AddIncomeToMoney ();
+				resource.AddKingRewardToMoney ();
 			}	
 		}
 		if (!spawning && waveCountdown > 0) {
 			GameManager.instance.building = true;
 			reset.enabled = true;
+			dragDropPlatform.SetActive (true);
+			BuildManager.instance.enabled = true;
 		}
 	}
 
@@ -63,6 +68,10 @@ public class WaveController : MonoBehaviour {
 
 		if (waveCountdown == 0 && enemiesAlive == false) {
 			GameManager.instance.building = false;
+
+			dragDropPlatform.SetActive (false);
+			BuildManager.instance.enabled = false;
+
 			reset.enabled = false;
 			StartCoroutine ( SpawnWave ( Waves[waveIndex] ) );
 			return;
@@ -91,8 +100,6 @@ public class WaveController : MonoBehaviour {
 			mercenaries[i].GetComponent<FighterController> ().currentStatus = FighterController.enemyStatus.Move;
 			mercenaries[i].GetComponent<Collider> ().enabled = true;
 		}
-
-		waveNumber += 1;
 
 		if (waveIndex < Waves.Length - 1) {
 			waveIndex++;

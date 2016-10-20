@@ -17,6 +17,12 @@ public class BuildManager : MonoBehaviour {
 	void OnEnable(){
 		GameObject[] tiles = GameObject.FindGameObjectsWithTag ("Tile");
 		Enable (tiles, true, "Tile");
+
+		GameObject[] fighters = GameObject.FindGameObjectsWithTag ("Tower");
+		foreach (GameObject item in fighters) {
+			SphereCollider radiusCollider = item.GetComponentInChildren<SphereCollider> ();
+			radiusCollider.enabled = false;
+		}
 	}
 
 	void OnDisable(){
@@ -36,11 +42,17 @@ public class BuildManager : MonoBehaviour {
 				if (tag.CompareTo ("Tower") == 0) {
 					item.GetComponent<FighterController> ().enabled = change;
 					item.GetComponent<Fighter> ().enabled = change;
-					item.GetComponent<NavMeshAgent> ().enabled = change;
+					item.GetComponent<NavMeshObstacle> ().enabled = !change;
+					if(item.GetComponent<NavMeshAgent> () != null)
+						item.GetComponent<NavMeshAgent> ().enabled = change;
 					item.GetComponent<Collider> ().enabled = change;
+
+					SphereCollider radiusCollider = item.GetComponentInChildren<SphereCollider> ();
+					FighterStats stats = item.GetComponent<FighterStats> ();
+					radiusCollider.radius = stats.viewRadius;
+					radiusCollider.enabled = change;
 				}
 			}
 		}
 	}
-		
 }

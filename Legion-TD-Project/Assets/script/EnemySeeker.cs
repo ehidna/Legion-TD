@@ -1,62 +1,69 @@
 ﻿using UnityEngine;
 using System.Collections;
-using System.Collections.Generic;
 
 public class EnemySeeker : MonoBehaviour {
 
 	FighterStats stat;
 	Fighter _fighter;
-	FighterController fighter;
-	FighterAnimator anim;
-	NavMeshObstacle obs;
+	FighterController fighterController;
+
+	bool fighting;
+
+	float counter = 2;
+	float countdown;
+
+	public bool king = false;
 
 	void Start () {
 		stat = GetComponent<FighterStats> (); 
 		_fighter = GetComponent<Fighter> ();
-		fighter = GetComponent<FighterController> ();
-		anim = GetComponent<FighterAnimator> ();
-		obs = GetComponent<NavMeshObstacle> ();
+		fighterController = GetComponent<FighterController> ();
 	}
 
 	void Update () {	
 		if (_fighter.currentTarget == null) {
+			fighting = false;  
 			Seek ();
+		} else {
+			if (countdown == 2 && !fighting) {
+				Seek ();
+			}
+			countdown -= Time.deltaTime;
+			if (countdown < 0)
+				countdown = counter;
 		}
 
 		if (Vector3.Distance (transform.position, _fighter.currentTarget.transform.position) <=  Mathf.Sqrt(stat.getRange ()) ) {
-			if(anim != null)
-				anim.Idle ();
+			fighting = true;
+			fighterController.IdleAnim ();
 			_fighter.fight = true;
-			fighter.ag.avoidancePriority = 30;
-			fighter.ag.enabled = false;
-			obs.enabled = true;
+			fighterController.FightAnimPrepare ();
 		} else {
-			if(anim != null)
-				anim.SetAnimBool ("walk", 1);
 			_fighter.fight = false;
-			obs.enabled = false;
-			fighter.ag.enabled = true;
-			fighter.SetDestination (_fighter.currentTarget.transform);
-
-			fighter.ag.avoidancePriority = 50;
+			if(!king)
+				fighterController.WalkAnim (_fighter.currentTarget.transform);
 		}
 	}
+
 	void Seek(){
-		if (fighter.visibleTargets.Count > 0) {
-			_fighter.currentTarget = fighter.visibleTargets [FindNearestTarget ()].gameObject;
-			fighter.currentStatus = FighterController.enemyStatus.Fight;
+		if (fighterController.visibleTargets.Count > 0) {
+			_fighter.currentTarget = fighterController.visibleTargets [FindNearestTarget ()].gameObject;
+			fighterController.currentStatus = FighterController.enemyStatus.Fight;
 		} else {
 			_fighter.currentTarget = null;
-			fighter.currentStatus = FighterController.enemyStatus.Move;
+			if(!king)
+				fighterController.currentStatus = FighterController.enemyStatus.Move;
+			else 
+				fighterController.currentStatus = FighterController.enemyStatus.Idle;
 		}
 	}
 
 	int FindNearestTarget(){
-		fighter.visibleTargets.RemoveAll(target => target == null);
+		fighterController.visibleTargets.RemoveAll(target => target == null);
 		int index = 0;
-		float nearestTargetDst = Vector3.Distance (transform.position, fighter.visibleTargets [0].position);
-		for (int i = 0; i < fighter.visibleTargets.Count; i++) {
-			float dstToTarget = Vector3.Distance (transform.position, fighter.visibleTargets [i].position);
+		float nearestTargetDst = Vector3.Distance (transform.position, fighterController.visibleTargets [0].position);
+		for (int i = 0; i < fighterController.visibleTargets.Count; i++) {
+			float dstToTarget = Vector3.Distance (transform.position, fighterController.visibleTargets [i].position);
 			if (nearestTargetDst > dstToTarget) {
 				nearestTargetDst = dstToTarget;
 				index = i;

@@ -13,8 +13,7 @@ public class FighterController : MonoBehaviour {
 	public enum enemyStatus{Move, Fight, Idle};
 	public enemyStatus currentStatus;
 
-	[SerializeField]
-	private string targetTag;
+	public string targetTag;
 
 	EnemySeeker seek;
 	FighterStats stat;
@@ -32,12 +31,14 @@ public class FighterController : MonoBehaviour {
 		stat = GetComponent<FighterStats> ();
 		stat.setHealth (stat.getMaxHealth ());
 
-		ag = GetComponent<NavMeshAgent> ();
-		ag.speed = stat.getSpeed ()/2;
-		ag.acceleration = Mathf.Pow (ag.speed, 2);
 
-		currentPathPoint = 0;
-		nextPathPoint = pathPoints [currentPathPoint];
+		ag = GetComponent<NavMeshAgent> ();
+		if (ag != null) {
+			ag.speed = stat.getSpeed () / 2;
+			ag.acceleration = Mathf.Pow (ag.speed, 2);
+			currentPathPoint = 0;
+			nextPathPoint = pathPoints [currentPathPoint];
+		}
 
 		seek = GetComponent<EnemySeeker> ();
 		anim = GetComponent<FighterAnimator> ();
@@ -75,11 +76,13 @@ public class FighterController : MonoBehaviour {
 		ag.avoidancePriority = 50;
 	}
 
-	public void FightAnimPrepare(){ 
+	public void FightAnimPrepare(){
 		currentStatus = enemyStatus.Fight;
-		ag.avoidancePriority = 30;
-		ag.enabled = false;
-		obs.enabled = true;
+		if (ag != null) {
+			ag.avoidancePriority = 30;
+			ag.enabled = false;
+			obs.enabled = true;
+		}
 	}
 
 	public void IdleAnim(){

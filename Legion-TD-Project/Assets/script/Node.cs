@@ -44,8 +44,7 @@ public class Node : MonoBehaviour {
 	public void BuildFighter(GameObject fighterToBuild){
 		positionOffset = new Vector3(0, fighterToBuild.transform.localScale.y, 0);
 		fighter = (GameObject)Instantiate (fighterToBuild, transform.position + positionOffset, transform.rotation);
-		string name = fighter.name.Substring (0, fighter.name.Length - 7);
-		backupFighter = Resources.Load(name)as GameObject;
+		backupFighter = fighterToBuild;
 		resource.BuyTower (fighter);
 	}
 }
