@@ -18,13 +18,17 @@ public class Town : MonoBehaviour {
 	ResourceController resource;
 	GameObject townUI;
 
+	private Transform root;
 
 	// Use this for initialization
 	void Start () {
-		resource = GameObject.Find("ResourceManager").GetComponent<ResourceController>();
+		root = transform.root;
+		resource = root.GetChild(0).GetComponentInChildren<ResourceController>();
 		countdown = workerCooldown;
-		townUI = GameObject.Find ("TownUI");
-		townUI.SetActive (false);
+		if(root.tag == "Player"){
+			townUI = GameObject.Find ("TownUI");
+			townUI.SetActive (false);
+		}
 	}
 
 	// Update is called once per frame

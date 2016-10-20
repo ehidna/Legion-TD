@@ -18,7 +18,7 @@ public class UIController : MonoBehaviour {
 		lumberText = GameObject.Find ("Lumber").GetComponent<Text>();
 		incomeText = GameObject.Find ("Income").GetComponent<Text>();
 		AlertText = GameObject.Find ("AlertText").GetComponent<Text>();
-		rc = GameObject.Find ("ResourceManager").GetComponent<ResourceController> ();
+		rc = GameObject.Find ("Player").GetComponent<ResourceController> ();
 		RefreshMoney ();
 		RefreshLumber ();
 		RefreshIncome ();

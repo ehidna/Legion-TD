@@ -9,7 +9,7 @@ public class Node : MonoBehaviour {
 	private GameObject backupFighter; // When fighter destroyed replace to it
 	public Vector3 positionOffset;
 
-	ResourceController resource;
+	public ResourceController resource;
 	UIController ui;
 
 	public bool hit = false;
@@ -18,11 +18,14 @@ public class Node : MonoBehaviour {
 	Renderer render;
 	public GameObject circlePlatform;
 	private GameObject temporaryPlatform;
+	private Transform root;
 
 	public void rebuildFighter(){
 		Destroy (fighter);
 		if (backupFighter != null) {
 			fighter = (GameObject)Instantiate (backupFighter, transform.position + positionOffset, transform.rotation);
+			fighter.GetComponent<FighterController> ().targetTag = "Enemy_" + root.tag;
+			fighter.GetComponent<Fighter> ().playerName = root.tag;
 		}
 	}
 
@@ -31,7 +34,9 @@ public class Node : MonoBehaviour {
 	}
 
 	void Start(){
-		resource = GameObject.Find ("ResourceManager").GetComponent<ResourceController>();
+		root = transform.root;
+		resource = root.GetComponentInChildren<ResourceController>();
+		//		resource = GameObject.Find ("ResourceManager").GetComponent<ResourceController>();
 		ui = GameObject.Find ("UIManager").GetComponent<UIController>();			
 		render = GetComponent<Renderer> ();
 	}
@@ -94,16 +99,22 @@ public class Node : MonoBehaviour {
 		positionOffset = new Vector3(0, fighterToBuild.transform.localScale.y, 0);
 		fighter = (GameObject)Instantiate (fighterToBuild, transform.position + positionOffset, transform.rotation);
 		backupFighter = fighterToBuild;
+		fighter.GetComponent<FighterController> ().targetTag = "Enemy_" + root.tag;
+		fighter.GetComponent<Fighter> ().playerName = root.tag;
 		resource.BuyTower (fighter);
 		resource.NumberEffect (fighter.transform, "-", fighter.GetComponent<FighterStats>().getCost(), Color.red);
 	}
 
 	void OnMouseOver(){
-		render.enabled = true;
-		render.material.color = col;
+		if (transform.root.tag == "Player") {
+			render.enabled = true;
+			render.material.color = col;
+		}
 	}
 
 	void OnMouseExit(){
-		render.enabled = false;
+		if (transform.root.tag == "Player") {
+			render.enabled = false;
+		}
 	}
 }

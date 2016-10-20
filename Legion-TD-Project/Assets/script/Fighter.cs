@@ -5,6 +5,7 @@ public class Fighter : MonoBehaviour {
 
 	private float fireCountdown = 0f;
 	public bool fight;
+	public string playerName;
 
 	public enum FighterType{Melee, Range};
 	public FighterType currentType;
@@ -31,7 +32,7 @@ public class Fighter : MonoBehaviour {
 	void Start () {
 		stats = GetComponent<FighterStats> ();
 		adt = GameObject.Find ("Translate").GetComponent<ArmorDamageTranslation> ();
-		resource = GameObject.Find ("ResourceManager").GetComponent<ResourceController>();
+		resource = GameObject.Find (playerName).GetComponent<ResourceController>();
 		anim = GetComponent<FighterAnimator>();
 	}
 

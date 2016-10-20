@@ -10,19 +10,22 @@ public class Barrack : MonoBehaviour {
 
 	UIController ui;
 	ResourceController resource;
+	GameObject mercenaries;
 
-	GameObject mercenaryUI;
+	private Transform root;
 
-	// Use this for initialization
 	void Start () {
-		mercenaryUI = GameObject.Find ("Mercenaries");
-		ui = GameObject.Find ("UIManager").GetComponent<UIController> ();
-		resource = GameObject.Find ("ResourceManager").GetComponent<ResourceController> ();
-		mercenaryUI.SetActive (false);
+		root = transform.root;
+		resource = root.GetChild(0).GetComponentInChildren<ResourceController>();
+		if (root.tag == "Player") {
+			mercenaries = GameObject.Find ("Mercenaries");
+			mercenaries.SetActive (false);
+			ui = GameObject.Find ("UIManager").GetComponent<UIController> ();
+		}
 	}
 
 	void OnMouseDown(){
-		mercenaryUI.SetActive(true);
+		mercenaries.SetActive(true);
 	}
 
 	public void CreateMercenary(int index){
@@ -31,14 +34,15 @@ public class Barrack : MonoBehaviour {
 			place.y = 0.3f;
 			GameObject mercenary = Instantiate (enemy[index], place, Quaternion.identity) as GameObject;
 			mercenary.GetComponent<FighterController> ().currentStatus = FighterController.enemyStatus.Idle;
+			mercenary.GetComponent<Fighter> ().playerName = root.tag;
 			resource.BuyMercenaries (mercenary);
-			mercenary.tag = "Mercenary";
+			mercenary.tag = "Mercenary_" + root.tag;
 		} else {
 			ui.NoLumber ();
 		}
 	}
 
 	public void Close(){
-		mercenaryUI.SetActive(false);
+		mercenaries.SetActive (false);
 	}
 }
