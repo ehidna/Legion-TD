@@ -14,7 +14,7 @@ public class ResetFighters : MonoBehaviour {
 		tiles = GameObject.FindGameObjectsWithTag ("Tile");
 		foreach (GameObject tile in tiles) {
 			node = tile.GetComponent<Node> ();
-			node.setFighter ();
+			node.rebuildFighter ();
 		}
 	}
 }

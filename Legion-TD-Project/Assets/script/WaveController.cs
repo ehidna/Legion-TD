@@ -69,6 +69,9 @@ public class WaveController : MonoBehaviour {
 		if (waveCountdown == 0 && enemiesAlive == false) {
 			GameManager.instance.building = false;
 
+			GameObject circlePlatform = GameObject.Find ("CirclePlatform(Clone)");
+			Destroy (circlePlatform);
+
 			dragDropPlatform.SetActive (false);
 			BuildManager.instance.enabled = false;
 
@@ -88,6 +91,10 @@ public class WaveController : MonoBehaviour {
 		for (int i = 0; i < wave.count; i++) {
 			Transform enemy = Instantiate (wave.enemy, wave.SpawnPoint.transform.position + Random.insideUnitSphere * 2, wave.SpawnPoint.transform.rotation)as Transform;
 			enemy.name = "Enemy" + i; 
+			SphereCollider radiusCollider = enemy.GetComponentInChildren<SphereCollider> ();
+			FighterStats stats = enemy.GetComponent<FighterStats> ();
+			radiusCollider.radius = stats.viewRadius;
+
 			yield return new WaitForSeconds (1f/wave.spawnRate);
 		}
 		yield return new WaitForSeconds (1.0f);
@@ -99,6 +106,9 @@ public class WaveController : MonoBehaviour {
 			mercenaries[i].GetComponent<NavMeshAgent> ().enabled = true;
 			mercenaries[i].GetComponent<FighterController> ().currentStatus = FighterController.enemyStatus.Move;
 			mercenaries[i].GetComponent<Collider> ().enabled = true;
+			SphereCollider radiusCollider = mercenaries[i].GetComponentInChildren<SphereCollider> ();
+			FighterStats stats = mercenaries[i].GetComponent<FighterStats> ();
+			radiusCollider.radius = stats.viewRadius;
 		}
 
 		if (waveIndex < Waves.Length - 1) {
